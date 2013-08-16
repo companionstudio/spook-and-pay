@@ -1,0 +1,14 @@
+$:.push File.expand_path("../lib/spook_and_pay", __FILE__)
+
+Gem::Specification.new do |s|
+  s.name        = "spook_and_pay"
+  s.version     = "0.1"
+  s.authors     = ["Luke Sutton", "Ben Hull"]
+  s.email       = ["lukeandben@spookandpuff.com"]
+  s.homepage    = "http://spookandpuff.com"
+  s.summary     = "A library for handling online payments using services providing transparent redirects."
+
+  s.files = Dir["lib/**/*"] + ["README.md"]
+
+  s.add_dependency 'braintree', '2.25.0'
+end
