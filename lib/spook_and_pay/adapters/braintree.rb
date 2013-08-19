@@ -74,6 +74,30 @@ module SpookAndPay
         gateway.transparent_redirect.confirm(query_string)
       end
 
+      # Captures the funds in an authorized transaction.
+      #
+      # @param String id
+      # @return [Braintree::SuccessfulResult, Braintree::ErrorResult]
+      def capture(id)
+        gateway.transaction.submit_for_settlement(id)
+      end
+
+      # Refunds the funds in a settled transaction.
+      #
+      # @param String id
+      # @return [Braintree::SuccessfulResult, Braintree::ErrorResult]
+      def refund(id)
+        gateway.transaction.refund(id)
+      end
+
+      # Voids a transaction.
+      #
+      # @param String id
+      # @return [Braintree::SuccessfulResult, Braintree::ErrorResult]
+      def void(id)
+        gateway.transaction.void(id)
+      end
+
       # The target URL for transparent redirects.
       #
       # @return String

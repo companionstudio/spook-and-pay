@@ -69,8 +69,19 @@ module SpookAndPay
         extract_transaction(result) if result
       end
 
-      def authorize
-        # In Braintree parlance, this is submitting for settlement
+      def capture_transaction(id)
+        result = adapter.capture(transaction_id(id))
+        generate_result(result)
+      end
+
+      def refund_transaction(id)
+        result = adapter.refund(transaction_id(id))
+        generate_result(result)
+      end
+
+      def void_transaction(id)
+        result = adapter.void(transaction_id(id))
+        generate_result(result)
       end
 
       private
@@ -88,7 +99,10 @@ module SpookAndPay
         "81716" => [:credit_card, :wrong_length, :number],
         "81712" => [:credit_card, :invalid_expiration_month, :expiration_month],
         "81713" => [:credit_card, :invalid_expiration_year, :expiration_year],
-        "81707" => [:credit_card, :invalid_cvv, :cvv]
+        "81707" => [:credit_card, :invalid_cvv, :cvv],
+        "91507" => [:transaction, :cannot_capture, :status],
+        "91506" => [:transaction, :cannot_refund, :status],
+        "91504" => [:transaction, :cannot_void, :status]
       }.freeze
 
       # Extracts errors from the collection returned by Brain tree and coerces
@@ -107,6 +121,29 @@ module SpookAndPay
         end
       end
 
+      # A generic method for generating results on actions. It doesn't capture 
+      # anything action specific i.e. it might need to be replaced later.
+      #
+      # @param [Braintree::SuccessfulResult, Braintree:ErrorResult] result
+      # @return SpookAndPay::Result
+      def generate_result(result)
+        case result
+        when ::Braintree::SuccessfulResult
+          SpookAndPay::Result.new(
+            true, 
+            result, 
+            :credit_card => extract_credit_card(result.transaction.credit_card_details, true, false), 
+            :transaction => extract_transaction(result.transaction)
+          )
+        when ::Braintree::ErrorResult
+          SpookAndPay::Result.new(
+            false, 
+            result, 
+            :errors => extract_errors(result)
+          )
+        end
+      end
+
       # Extracts credit card details from a payload extracted from a result.
       # It could be either a Hash, Braintree::CreditCard or 
       # Braintree::Transaction::CreditCardDetails. BOO!
@@ -118,7 +155,8 @@ module SpookAndPay
       #
       # @todo figure out validity and expiry ourselves
       def extract_credit_card(card, valid, expired)
-        opts = if card.is_a?(Hash)
+        opts = case card
+        when Hash 
           {
             :token            => card[:token],
             :card_type        => card[:card_type],
@@ -151,7 +189,8 @@ module SpookAndPay
       #
       # @todo Coerce type into what we know is valid
       def extract_transaction(result, payload = {})
-        if result.is_a?(Hash)
+        case result
+        when Hash
           payload[:amount] = result[:amount] if result.has_key?(:amount)
 
           SpookAndPay::Transaction.new(

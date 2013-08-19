@@ -9,8 +9,12 @@ module SpookAndPay
     # The basic types for transactions.
     TYPES = [:purchase, :authorize, :capture, :credit, :void].freeze
 
+    # Acceptable set of statuses.
+    STATUSES = [:authorized, :submitted, :settled, :voided, :gateway_rejected].freeze
+
     # @param SpookAndPay::Providers::Base provider
     # @todo Check type against the TYPES collection.
+    # @todo Check status against STATUSES collection.
     def initialize(provider, id, type, created_at, status, payload = {})
       @provider   = provider
       @id         = id

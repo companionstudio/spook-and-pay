@@ -44,6 +44,11 @@ module SpookAndPay
             :invalid_expiration_year  => "expiration year is invalid",
             :invalid_cvv              => "CVV must be three digits"
           },
+          :transaction => {
+            :cannot_capture => "must be authorized in order to capture funds",
+            :cannot_refund  => "must be settled in order to refund",
+            :cannot_void    => "must be authorized or settled in order to void"
+          },
           :unknown => {
             :unknown => "please refer to the #raw attribute of this error"
           }
@@ -156,15 +161,6 @@ module SpookAndPay
         raise NotImplementedError
       end
 
-      # Voids an authorization. 
-      #
-      # @param SpookAndPay::Transaction
-      # 
-      # @return SpookAndPay::Result
-      def void_transaction(transaction)
-        raise NotImplementedError
-      end
-
       # Authorizes a payment.
       #
       # @param SpookAndPay::CreditCard card
@@ -187,22 +183,25 @@ module SpookAndPay
 
       # Captures funds that have been pre-authorized.
       #
-      # @param String transaction_id
-      # @param Hash opts
-      # 
-      # @return SpookAndPay::Transaction
-      def capture_transaction(payment_method, transaction_id, opts)
+      # @param [SpookAndPay::Transaction, String] id
+      # @return SpookAndPay::Result
+      def capture_transaction(id)
         raise NotImplementedError
       end
 
-      # Credits a payment method with the specified amount.
+      # Refunds the amount of money captured in a transaction.
       #
-      # @param SpookAndPay::CreditCard payment_method
-      # @param [String, Numeric] amount
-      # @param Hash opts
+      # @param [SpookAndPay::Transaction, String] id
+      # @return SpookAndPay::Result
+      def refund_transaction(id)
+        raise NotImplementedError
+      end
+
+      # Voids an authorization. 
       #
-      # @return SpookAndPay::Transaction
-      def refund_transaction(payment_method, amount, opts = {})
+      # @param [SpookAndPay::Transaction, String] id
+      # @return SpookAndPay::Result
+      def void_transaction(id)
         raise NotImplementedError
       end
 
@@ -217,6 +216,17 @@ module SpookAndPay
       end
 
       private
+
+      # Extracts a transaction ID from it's target.
+      #
+      # @param [SpookAndPay::Transaction, String]
+      # @return String
+      def transaction_id(id)
+        case id
+        when SpookAndPay::Transaction then id.id
+        else id
+        end
+      end
 
       # Returns the URL any forms must submit to. Depending on the provider,
       # this might change to a different URL per environment.

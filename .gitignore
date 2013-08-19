@@ -1,5 +1,6 @@
 .bundle/*
 .DS_Store
 *.gem
+config.ru
 env.rb
 spec/vcr_cassettes/*
