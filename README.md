@@ -9,3 +9,12 @@ Initially this library will support Braintree and SpreedlyCore, with more added 
 ## Alpha Warning
 
 This library is currently in-flight; you're welcome to hack on it, but it's unlikely to be usable.
+
+## Todo
+
+* Normalise transaction statuses across providers
+* Normalise errors across providers
+* Implement actions on CreditCard e.g. update, delete
+* Create helpers for generating forms
+* Create Payment object for use in forms; it wraps values and errors compatible with ActionView 
+* Add workflow definitions and predicates based on transaction status
