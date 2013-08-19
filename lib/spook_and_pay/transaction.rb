@@ -12,6 +12,26 @@ module SpookAndPay
     # Acceptable set of statuses.
     STATUSES = [:authorized, :submitted, :settled, :voided, :gateway_rejected].freeze
 
+    # An error thrown when attempting to perform an action that is not allowed
+    # given a transaction's status.
+    class InvalidActionError < StandardError
+      # @param String id
+      # @param Symbol action
+      # @param Symbol status
+      def initialize(id, action, status)
+        @id     = id
+        @action = action
+        @status = status
+      end
+
+      # Human readable message.
+      #
+      # @return String
+      def to_s
+        "Cannot perform the action '#{@action}' for transaction '#{@id}' while in status '#{@status}'"
+      end
+    end
+
     # @param SpookAndPay::Providers::Base provider
     # @todo Check type against the TYPES collection.
     # @todo Check status against STATUSES collection.
@@ -33,12 +53,40 @@ module SpookAndPay
       other.is_a?(SpookAndPay::Transaction) and other.id == id
     end
 
+    # A predicate for checking if a transaction can be refunded. Only true if
+    # the status is :settled
+    #
+    # @return [true, false]
+    def can_refund?
+      status == :settled
+    end
+
+    # A predicate for checking if a transaction can be captured. Only true if
+    # the status is :authorized
+    #
+    # @return [true, false]
+    def can_capture?
+      status == :authorized
+    end
+
+    # A predicate for checking if a transaction can be voided. Only true if
+    # the status is :authorized or :settled. Transactions that are :submitted
+    # cannot be voided until the status becomes :settled; how long this takes 
+    # depends on the payment gateway.
+    #
+    # @return [true, false]
+    def can_void?
+      status == :authorized or status == :settled
+    end
+
     # Refunds the transaction. The related credit card will be credited for
     # the amount captured. It will only succeed for purchases or captured
     # authorizations.
     #
     # @return SpookAndPay::Result
+    # @raises InvalidActionError
     def refund!
+      raise InvalidActionError.new(id, :refund, status) unless can_refund?
       provider.refund_transaction(self)
     end
 
@@ -46,7 +94,9 @@ module SpookAndPay
     # authorized and will fail if the transaction is already captured.
     #
     # @return SpookAndPay::Result
+    # @raises InvalidActionError
     def capture!
+      raise InvalidActionError.new(id, :capture, status) unless can_refund?
       provider.capture_transaction(self)
     end
 
@@ -54,7 +104,9 @@ module SpookAndPay
     # authorized status. Otherwise it must be refunded.
     #
     # @return SpookAndPay::Result
+    # @raises InvalidActionError
     def void!
+      raise InvalidActionError.new(id, :void, status) unless can_refund?
       provider.void_transaction(self)
     end
   end

@@ -126,6 +126,9 @@ module SpookAndPay
 
       # Captures funds that have been pre-authorized.
       #
+      # This should not be called directly. Instead, use the #capture! method
+      # provided by a Transaction instance.
+      #
       # @param [SpookAndPay::Transaction, String] id
       # @return SpookAndPay::Result
       def capture_transaction(id)
@@ -134,6 +137,9 @@ module SpookAndPay
 
       # Refunds the amount of money captured in a transaction.
       #
+      # This should not be called directly. Instead, use the #refund! method
+      # provided by a Transaction instance.
+      #
       # @param [SpookAndPay::Transaction, String] id
       # @return SpookAndPay::Result
       def refund_transaction(id)
@@ -141,6 +147,9 @@ module SpookAndPay
       end
 
       # Voids an authorization. 
+      #
+      # This should not be called directly. Instead, use the #void! method
+      # provided by a Transaction instance.
       #
       # @param [SpookAndPay::Transaction, String] id
       # @return SpookAndPay::Result

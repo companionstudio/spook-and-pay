@@ -17,4 +17,3 @@ This library is currently in-flight; you're welcome to hack on it, but it's unli
 * Implement actions on CreditCard e.g. update, delete
 * Create helpers for generating forms
 * Create Payment object for use in forms; it wraps values and errors compatible with ActionView 
-* Add workflow definitions and predicates based on transaction status
