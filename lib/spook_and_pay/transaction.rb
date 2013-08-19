@@ -29,10 +29,18 @@ module SpookAndPay
       provider.refund_transaction(self)
     end
 
+    # Captures an authorized transaction. Will only capture the amount 
+    # authorized and will fail if the transaction is already captured.
+    #
+    # @return SpookAndPay::Result
     def capture!
       provider.capture_transaction(self)
     end
 
+    # Voids a transaction. Can only be done when the transaction is in the 
+    # authorized status. Otherwise it must be refunded.
+    #
+    # @return SpookAndPay::Result
     def void!
       provider.void_transaction(self)
     end

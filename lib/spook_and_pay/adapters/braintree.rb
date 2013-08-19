@@ -4,8 +4,17 @@ module SpookAndPay
     # a sane way. Specifically, it lets us have multiple sets of credentials,
     # whereas the default behaviour in the lib is to have them global
     class Braintree
+      # Accessor for the Braintree::Gateway instance. In general should not be
+      # accessed externally, but is put here for debugging etc.
       attr_reader :gateway
 
+      # Constructs an instance of the Braintree gateway which it then acts as 
+      # a proxy to.
+      #
+      # @param [:development, :test, :production] environment
+      # @param String merchant_id
+      # @param String public_key
+      # @param String private_key
       def initialize(environment, merchant_id, public_key, private_key)
         _environment = case environment
         when :production then :production
@@ -56,11 +65,18 @@ module SpookAndPay
         gateway.transparent_redirect.transaction_data(data)
       end
 
-      # 
+      # Used to confirm the submission of purchase or authorize transactions 
+      # via transparent redirect.
+      #
+      # @param String query_string
+      # @return [Braintree::SuccessfulResult, Braintree::ErrorResult]
       def confirm(query_string)
         gateway.transparent_redirect.confirm(query_string)
       end
 
+      # The target URL for transparent redirects.
+      #
+      # @return String
       def transparent_redirect_url
         gateway.transparent_redirect.url
       end
