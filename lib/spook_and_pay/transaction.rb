@@ -24,6 +24,15 @@ module SpookAndPay
       @payload    = payload
     end
 
+    # Implements value comparison i.e. if class and ID match, they are the 
+    # same.
+    #
+    # @param Class other
+    # @return [true, false]
+    def ==(other)
+      other.is_a?(SpookAndPay::Transaction) and other.id == id
+    end
+
     # Refunds the transaction. The related credit card will be credited for
     # the amount captured. It will only succeed for purchases or captured
     # authorizations.
