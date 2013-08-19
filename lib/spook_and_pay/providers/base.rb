@@ -133,14 +133,16 @@ module SpookAndPay
       #
       # This method is implemented by calling on provider specific methods.
       #
+      # @param [:purchase, :authorize] type
       # @param Hash opts
+      # @option opts String :vault
       # @option opts String :redirect_url
       #
       # @return Hash
-      def prepare_payment_submission(opts = {})
+      def prepare_payment_submission(type, opts = {})
         {
           :url            => payment_submission_url,
-          :hidden_fields  => payment_hidden_fields(opts),
+          :hidden_fields  => payment_hidden_fields(type, opts),
           :field_names    => self.class::FORM_FIELD_NAMES
         }
       end
@@ -165,22 +167,21 @@ module SpookAndPay
 
       # Authorizes a payment.
       #
-      # @param [SpookAndPay::Transaction, String] id
-      # @param Hash opts
+      # @param SpookAndPay::CreditCard card
+      # @param [String, Numeric] amount
       # 
       # @return SpookAndPay::Result
-      def authorize(credit_card, opts = {})
+      def authorize(card, amount)
         raise NotImplementedError
       end
 
       # Bills a payment method.
       #
-      # @param SpookAndPay::CreditCard payment_method
+      # @param SpookAndPay::CreditCard card
       # @param [String, Numeric] amount
-      # @param Hash opts
       # 
       # @return SpookAndPay::Transaction
-      def purchase(credit_card, amount, opts = {})
+      def purchase(card, amount)
         raise NotImplementedError
       end
 
@@ -231,13 +232,14 @@ module SpookAndPay
       # Returns a Hash of fields that should be injected into a form when 
       # submitting card details.
       #
+      # @param [:purchase, :authorize] type
       # @param Hash opts
       #
       # @return Hash
       #
       # @abstract Subclass to implement
       # @api private
-      def payment_hidden_fields(opts = {})
+      def payment_hidden_fields(type, opts = {})
         raise NotImplementedError
       end
     end

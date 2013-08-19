@@ -199,14 +199,18 @@ module SpookAndPay
       # @param Hash opts
       # @option opts String :amount
       # @option opts [true, false] :store_in_vault
-      def payment_hidden_fields(opts)
+      def payment_hidden_fields(type, opts)
         payload = {
           :transaction  => {:type => opts[:type] || 'sale', :amount => opts[:amount]},
           :redirect_url => opts[:redirect_url]
         }
 
-        if opts[:store_in_vault]
-          payload[:transaction][:options] = {:store_in_vault => true}
+        if opts[:vault]
+          (payload[:transaction][:options] ||= {})[:store_in_vault] = true
+        end
+
+        if type == :purchase
+          (payload[:transaction][:options] ||= {})[:submit_for_settlement] = true
         end
 
         {:tr_data => adapter.transaction_data(payload)}

@@ -16,6 +16,7 @@ module SpookAndPay
       @id         = id
       @type       = type
       @created_at = created_at
+      @status     = status.to_sym if status
       @payload    = payload
     end
 
