@@ -26,6 +26,40 @@ module SpookAndPay
         super(env, config)
       end
 
+      # Braintree specific version of this method. Can be used to either 
+      # authorize a payment — and capture it later — or submit a payment for 
+      # settlement immediately. This is done via the type param.
+      #
+      # Because Braintree accepts payment details and processes payment in a 
+      # single step, this method must also be provided with an amount.
+      #
+      # @param [:purchase, :authorize] type
+      # @param String redirect_url
+      # @param [String, Numeric] amount
+      # @param Hash opts
+      # @option opts [true, false] :vault
+      # @return Hash
+      def prepare_payment_submission(type, redirect_url, amount, opts = {})
+        payload = {
+          :transaction  => {:type => 'sale', :amount => amount},
+          :redirect_url => redirect_url
+        }
+
+        if opts[:vault]
+          (payload[:transaction][:options] ||= {})[:store_in_vault] = true
+        end
+
+        if type == :purchase
+          (payload[:transaction][:options] ||= {})[:submit_for_settlement] = true
+        end
+
+        {
+          :url            => adapter.transparent_redirect_url,
+          :hidden_fields  => {:tr_data => adapter.transaction_data(payload)},
+          :field_names    => self.class::FORM_FIELD_NAMES
+        }
+      end
+
       # Confirms the submission of payment details to the provider.
       #
       # @param String query_string
@@ -227,32 +261,6 @@ module SpookAndPay
         when 'authorized' then true
         else false
         end
-      end
-
-      def payment_submission_url
-        adapter.transparent_redirect_url
-      end
-
-      # Hidden fields used by the Braintree provider.
-      #
-      # @param Hash opts
-      # @option opts String :amount
-      # @option opts [true, false] :store_in_vault
-      def payment_hidden_fields(type, opts)
-        payload = {
-          :transaction  => {:type => opts[:type] || 'sale', :amount => opts[:amount]},
-          :redirect_url => opts[:redirect_url]
-        }
-
-        if opts[:vault]
-          (payload[:transaction][:options] ||= {})[:store_in_vault] = true
-        end
-
-        if type == :purchase
-          (payload[:transaction][:options] ||= {})[:submit_for_settlement] = true
-        end
-
-        {:tr_data => adapter.transaction_data(payload)}
       end
     end
   end

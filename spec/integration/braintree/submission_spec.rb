@@ -12,13 +12,7 @@ describe "Braintree submission" do
 
   describe "of transactions" do
     def request(type, vals = {})
-      prepare = @provider.prepare_payment_submission(
-        type,
-        :type => 'sale', 
-        :amount => 10,
-        :redirect_url => "http://localhost"
-      )
-
+      prepare = @provider.prepare_payment_submission(type, "http://localhost", 10)
       response = provider_request(prepare, vals)
       @provider.confirm_payment_submission(response["QUERY_STRING"])
     end

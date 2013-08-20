@@ -43,7 +43,7 @@ module SpookAndPay
     # @param [String, Numeric] amount
     # @return SpookAndPay::Result
     def authorize!(amount)
-      provider.authorize(self, amount)
+      provider.authorize_via_credit_card(self, amount)
     end
 
     # Generates a payment of the specified amount.
@@ -51,7 +51,7 @@ module SpookAndPay
     # @param [String, Numeric] amount
     # @return SpookAndPay::Result
     def purchase!(amount)
-      provider.purchase(self, amount)
+      provider.purchase_via_credit_card(self, amount)
     end
 
     # Deletes the credit card from the provider's vault.
