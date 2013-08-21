@@ -129,6 +129,7 @@ module SpookAndPay
       # applies to.
       ERROR_CODE_MAPPING = {
         "81715" => [:credit_card, :invalid_number, :number],
+        "81714" => [:credit_card, :number_required, :number],
         "81703" => [:credit_card, :type_not_accepted, :card_type],
         "81716" => [:credit_card, :wrong_length, :number],
         "81712" => [:credit_card, :invalid_expiration_month, :expiration_month],
