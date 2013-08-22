@@ -96,7 +96,7 @@ module SpookAndPay
     # @return SpookAndPay::Result
     # @raises InvalidActionError
     def capture!
-      raise InvalidActionError.new(id, :capture, status) unless can_refund?
+      raise InvalidActionError.new(id, :capture, status) unless can_capture?
       provider.capture_transaction(self)
     end
 
@@ -106,7 +106,7 @@ module SpookAndPay
     # @return SpookAndPay::Result
     # @raises InvalidActionError
     def void!
-      raise InvalidActionError.new(id, :void, status) unless can_refund?
+      raise InvalidActionError.new(id, :void, status) unless can_void?
       provider.void_transaction(self)
     end
   end
