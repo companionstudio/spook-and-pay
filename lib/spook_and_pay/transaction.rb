@@ -53,6 +53,28 @@ module SpookAndPay
       other.is_a?(SpookAndPay::Transaction) and other.id == id
     end
 
+    # A simple predicate to see if the payment has been settled.
+    #
+    # @return [true, false]
+    def settled?
+      status == :settled
+    end
+
+    # A simple predicate which indicates if the payment is in the process of
+    # being settled.
+    #
+    # @return [true, false]
+    def settling?
+      status == :submitted_for_settlement
+    end
+
+    # A simple predicate to check if the payment has been authorized.
+    #
+    # @return [true, false]
+    def authorized?
+      status == :authorized
+    end
+
     # A predicate for checking if a transaction can be refunded. Only true if
     # the status is :settled
     #
