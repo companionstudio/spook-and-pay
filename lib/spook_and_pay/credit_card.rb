@@ -37,6 +37,22 @@ module SpookAndPay
       nil
     end
 
+    # A getter which takes the card number stored and generates a nice masked 
+    # version. It also handles the case where the number isn't available and 
+    # just returns nil instead.
+    #
+    # @return String
+    def number
+      if @number.nil? or @number.empty?
+        nil
+      else
+        case card_type
+        when 'american_express' then "XXXX-XXXXXX-#{@number}"
+        else "XXXX-XXXX-XXXX-#{@number}"
+        end
+      end
+    end
+
     # Authorizes a payment of the specified amount. This generates a new
     # transaction that must be later settled.
     #
