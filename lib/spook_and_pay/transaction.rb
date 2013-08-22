@@ -70,13 +70,11 @@ module SpookAndPay
     end
 
     # A predicate for checking if a transaction can be voided. Only true if
-    # the status is :authorized or :settled. Transactions that are :submitted
-    # cannot be voided until the status becomes :settled; how long this takes 
-    # depends on the payment gateway.
+    # the status is :authorized or :submitted_for_settlement
     #
     # @return [true, false]
     def can_void?
-      status == :authorized or status == :settled
+      status == :authorized or status == :submitted_for_settlement
     end
 
     # Refunds the transaction. The related credit card will be credited for
