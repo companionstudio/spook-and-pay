@@ -10,7 +10,7 @@ module SpookAndPay
     TYPES = [:purchase, :authorize, :capture, :credit, :void].freeze
 
     # Acceptable set of statuses.
-    STATUSES = [:authorized, :submitted, :settled, :voided, :gateway_rejected].freeze
+    STATUSES = [:authorized, :settling, :settled, :voided, :refunded, :gateway_rejected].freeze
 
     # An error thrown when attempting to perform an action that is not allowed
     # given a transaction's status.
@@ -33,8 +33,7 @@ module SpookAndPay
     end
 
     # @param SpookAndPay::Providers::Base provider
-    # @todo Check type against the TYPES collection.
-    # @todo Check status against STATUSES collection.
+    # @todo Raise better errors when checking status/type
     def initialize(provider, id, type, created_at, status, payload = {})
       @provider   = provider
       @id         = id
@@ -65,7 +64,7 @@ module SpookAndPay
     #
     # @return [true, false]
     def settling?
-      status == :submitted_for_settlement
+      status == :settling
     end
 
     # A simple predicate to check if the payment has been authorized.
@@ -96,7 +95,7 @@ module SpookAndPay
     #
     # @return [true, false]
     def can_void?
-      status == :authorized or status == :submitted_for_settlement
+      status == :authorized or status == :settling
     end
 
     # Refunds the transaction. The related credit card will be credited for

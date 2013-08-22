@@ -233,7 +233,7 @@ module SpookAndPay
             result[:id],
             result[:type].to_sym,
             result[:created_at],
-            result[:status],
+            coerce_transaction_status(result[:status]),
             payload
           ) 
         else
@@ -244,9 +244,20 @@ module SpookAndPay
             result.id,
             result.type.to_sym,
             result.created_at,
-            result.status,
+            coerce_transaction_status(result.status),
             payload
           ) 
+        end
+      end
+
+      # Coerces the status into a value expected by the Transaction class.
+      #
+      # @param [String, nil] status
+      # @return [String, nil]
+      def coerce_transaction_status(status)
+        case status
+        when 'submitted_for_settlement' then 'settling'
+        else status
         end
       end
 
