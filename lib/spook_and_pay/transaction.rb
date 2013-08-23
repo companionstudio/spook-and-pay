@@ -4,7 +4,12 @@ module SpookAndPay
   # read-only.
   class Transaction
     # Basic attributes
-    attr_reader :provider, :id, :type, :payload, :created_at, :status
+    attr_reader :provider, :id, :status, :raw
+
+    # Extra set of fields which may or may not be present depending on the 
+    # provider.
+    FIELDS = [:created_at, :updated_at, :amount, :credit_card, :type].freeze
+    attr_reader *FIELDS
 
     # The basic types for transactions.
     TYPES = [:purchase, :authorize, :capture, :credit, :void].freeze
@@ -32,15 +37,27 @@ module SpookAndPay
       end
     end
 
+    # As a bare minimum the transaction captures the transaction ID, it's 
+    # status and the raw response from the provider. Optionally, it can receive
+    # other fields via the opts hash.
+    #
     # @param SpookAndPay::Providers::Base provider
-    # @todo Raise better errors when checking status/type
-    def initialize(provider, id, type, created_at, status, payload = {})
+    # @param String id
+    # @param [String, nil] status
+    # @param Class raw
+    # @param Hash opts
+    # @option opts SpookAndPay::CreditCard :credit_card
+    # @option opts Time :created_at
+    # @option opts Time :updated_at
+    # @option opts BigDecimal :amount
+    # @option opts String :type
+    def initialize(provider, id, status, raw, opts = {})
       @provider   = provider
       @id         = id
-      @type       = type
-      @created_at = created_at
       @status     = status.to_sym if status
-      @payload    = payload
+      @raw        = raw
+
+      FIELDS.each {|f| instance_variable_set(:"@#{f}", opts[f]) if opts.has_key?(f)}
     end
 
     # Implements value comparison i.e. if class and ID match, they are the 

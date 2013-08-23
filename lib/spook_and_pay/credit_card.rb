@@ -3,38 +3,39 @@ module SpookAndPay
   # provider. This class is entirely read only, since it is only used to
   # as part of inspecting a payment or handling errors.
   class CreditCard
+    # This module adds the ::attr_erroring_reader to this class
+    extend SpookAndPay::ErroringReader
+
     # The basic attributes of the credit card.
-    attr_reader :provider, :id, :valid, :expired
+    attr_reader :provider, :id
 
     # The fields required for a credit card
-    FIELDS = [:number, :expiration_month, :expiration_year, :cvv, :card_type, :name].freeze
+    FIELDS = [:number, :expiration_month, :expiration_year, :cvv, :card_type, :name, :valid, :expired].freeze
 
     # Define readers for all the fields
     attr_reader *FIELDS
+
+    # Define a subset of the readers as erroring
+    attr_erroring_reader :valid, :expired
 
     # Construct a new credit card using the ID from the provider and a hash
     # containing the values of the card.
     #
     # @param SpookAndPay::Providers::Base provider
     # @param [Numeric, String] id
-    # @param [true, false] valid
-    # @param [true, false] expired
     # @param Hash vals
-    #
-    # @return nil
-    def initialize(provider, id, valid, expired, vals)
+    # @option vals String :number
+    # @option vals [String, Numeric] :expiration_month
+    # @option vals [String, Numeric] :expiration_year
+    # @option vals [String, Numeric] :cvv
+    # @option vals String :card_type
+    # @option vals String :name
+    # @option vals [true, false] :expired
+    # @option vals [true, false] :valid
+    def initialize(provider, id, vals)
       @provider = provider
-      @id       = id
-      @valid    = valid
-      @expired  = expired
-
-      FIELDS.each do |field|
-        if vals.has_key?(field)
-          instance_variable_set(:"@#{field}", vals[field]) 
-        end
-      end
-
-      nil
+      @id = id
+      FIELDS.each {|f| instance_variable_set(:"@#{f}", vals[f]) if vals.has_key?(f)}
     end
 
     # A getter which takes the card number stored and generates a nice masked 
@@ -81,7 +82,7 @@ module SpookAndPay
     #
     # @return [true, false]
     def valid?
-      @valid
+      valid
     end
 
     # Indicates if the card is expired. This is not calculated, but instead
@@ -89,7 +90,7 @@ module SpookAndPay
     #
     # @return [true, false]
     def expired?
-      @expired
+      expired
     end
   end
 end

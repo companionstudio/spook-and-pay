@@ -11,6 +11,8 @@ require 'braintree'
 
 require 'spook_and_pay/credit_card'
 require 'spook_and_pay/submission_error'
+require 'spook_and_pay/missing_value_error'
+require 'spook_and_pay/erroring_reader'
 require 'spook_and_pay/result'
 require 'spook_and_pay/transaction'
 require 'spook_and_pay/adapters'

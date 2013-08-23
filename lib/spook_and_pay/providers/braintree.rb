@@ -211,7 +211,7 @@ module SpookAndPay
           }
         end
 
-        SpookAndPay::CreditCard.new(self, opts.delete(:token), valid, expired, opts)
+        SpookAndPay::CreditCard.new(self, opts.delete(:token), opts)
       end
 
       # Extracts transaction details from whatever payload is passed in. This 
@@ -226,26 +226,24 @@ module SpookAndPay
       def extract_transaction(result, payload = {})
         case result
         when Hash
-          payload[:amount] = result[:amount] if result.has_key?(:amount)
-
           SpookAndPay::Transaction.new(
             self,
             result[:id],
-            result[:type].to_sym,
-            result[:created_at],
             coerce_transaction_status(result[:status]),
-            payload
+            result,
+            :type       => result[:type].to_sym,
+            :created_at => result[:created_at],
+            :amount     => result[:amount]
           ) 
         else
-          payload[:amount] = result.amount unless result.amount.nil?
-
           SpookAndPay::Transaction.new(
             self,
             result.id,
-            result.type.to_sym,
-            result.created_at,
             coerce_transaction_status(result.status),
-            payload
+            result,
+            :type       => result.type.to_sym,
+            :created_at => result.created_at,
+            :amount     => result.amount
           ) 
         end
       end
