@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    spook_and_pay (0.1)
+    spook_and_pay (0.2.0.alpha)
       braintree (= 2.25.0)
 
 GEM
