@@ -151,7 +151,7 @@ module SpookAndPay
       # provided by a CreditCard instance.
       #
       # @param [SpookAndPay::CreditCard, String] id
-      # @param [String, Numeric] amount
+      # @param [String, Numeric] amount in dollars
       # @return SpookAndPay::Result
       # @api private
       # @abstract Subclass to implement
@@ -187,6 +187,18 @@ module SpookAndPay
       end
 
       private
+
+      # Extracts the credit card id from it's argument. This is is to help with
+      # methods that accept either a card instance of an id.
+      #
+      # @param [SpookAndPay::CreditCard, String]
+      # @return String
+      def credit_card_id(id)
+        case id
+        when SpookAndPay::CreditCard then id.id
+        else id
+        end
+      end
 
       # Extracts a transaction ID from it's target.
       #

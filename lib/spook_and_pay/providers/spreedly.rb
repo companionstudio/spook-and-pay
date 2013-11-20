@@ -96,12 +96,17 @@ module SpookAndPay
       end
 
       def authorize_via_credit_card(id, amount)
-        result = spreedly.authorize_on_gateway(gateway_token, id, amount)
+        result = spreedly.authorize_on_gateway(gateway_token, credit_card_id(id), amount.to_f * 100)
         coerce_result(result)
       end
 
       def purchase_via_credit_card(id, amount)
-        result = spreedly.purchase_on_gateway(gateway_token, id, amount)
+        result = spreedly.purchase_on_gateway(gateway_token, credit_card_id(id), amount.to_f * 100)
+        coerce_result(result)
+      end
+
+      def delete_credit_card(id)
+        result = spreedly.redact_payment_method(id)
         coerce_result(result)
       end
 
@@ -116,7 +121,7 @@ module SpookAndPay
         opts = {
           :transaction  => coerce_transaction(result),
           :card         => coerce_credit_card(result.payment_method),
-          :errors       => extract_errors(result)
+          :errors       => extract_transaction_errors(result)
         }
 
         SpookAndPay::Result.new(result.succeeded, result, opts)
@@ -202,15 +207,23 @@ module SpookAndPay
       #
       # @param Spreedly::Transaction transaction
       # @return SpookAndPay::Transaction
+      # @todo extract created_at and status from the transaction.response
       def coerce_transaction(transaction)
-        fields = {
-          :type => transaction.type,
-          :amount => transaction.amount
-        }
+        fields = {}
 
-        status = :what
+        fields[:type] = case transaction
+        when ::Spreedly::Authorization then :authorize
+        when ::Spreedly::Purchase then :purchase
+        when ::Spreedly::Capture then :capture
+        when ::Spreedly::Refund then :credit
+        when ::Spreedly::Void then :void
+        end
 
-        SpookAndPay::Transaction.new(self, transaction.token, status, transaction, fields)
+        if transaction.respond_to?(:amount)
+          fields[:amount] = transaction.amount
+        end
+
+        SpookAndPay::Transaction.new(self, transaction.token, nil, transaction, fields)
       end
     end
   end
