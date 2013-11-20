@@ -128,13 +128,13 @@ module SpookAndPay
       # second is the type of error and the third is the field — if any — it 
       # applies to.
       ERROR_CODE_MAPPING = {
-        "81715" => [:credit_card, :invalid_number, :number],
-        "81725" => [:credit_card, :number_required, :number],
+        "81715" => [:credit_card, :invalid, :number],
+        "81725" => [:credit_card, :required, :number],
         "81703" => [:credit_card, :type_not_accepted, :card_type],
-        "81716" => [:credit_card, :wrong_length, :number],
-        "81712" => [:credit_card, :invalid_expiration_month, :expiration_month],
-        "81713" => [:credit_card, :invalid_expiration_year, :expiration_year],
-        "81707" => [:credit_card, :invalid_cvv, :cvv],
+        "81716" => [:credit_card, :too_short, :number],
+        "81712" => [:credit_card, :invalid, :expiration_month],
+        "81713" => [:credit_card, :invalid, :expiration_year],
+        "81707" => [:credit_card, :invalid, :cvv],
         "91507" => [:transaction, :cannot_capture, :status],
         "91506" => [:transaction, :cannot_refund, :status],
         "91504" => [:transaction, :cannot_void, :status]

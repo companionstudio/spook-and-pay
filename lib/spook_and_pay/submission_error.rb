@@ -14,12 +14,14 @@ module SpookAndPay
     ERROR_MESSAGES = {
       :credit_card => {
         :number_required          => "number is required",
-        :invalid_number           => "number is invalid",
+        :number_invalid           => "number is invalid",
+        :number_too_short         => "number must be between 12 and 19 digits",
         :type_not_accepted        => "card type is not accepted by this merchant",
-        :wrong_length             => "number must be between 12 and 19 digits",
-        :invalid_expiration_month => "expiration month is invalid",
-        :invalid_expiration_year  => "expiration year is invalid",
-        :invalid_cvv              => "CVV must be three digits"
+        :expiration_month_invalid => "expiration month is invalid",
+        :expiration_month_expired => "expiration month has expired",
+        :expiration_year_invalid  => "expiration year is invalid",
+        :expiration_year_expired  => "expiration year has expired",
+        :cvv_invalid              => "CVV must be three digits"
       },
       :transaction => {
         :cannot_capture => "must be authorized in order to capture funds",
@@ -37,8 +39,8 @@ module SpookAndPay
     # Generates a new error. Based on the target and error type, it can
     # generate the appropriate error messages or otherwise fall back.
     #
-    # @param Symbol error_type
     # @param Symbol target
+    # @param Symbol error_type
     # @param [Symbol, nil] field
     # @param Class raw
     def initialize(target, error_type, field, raw)
@@ -60,7 +62,7 @@ module SpookAndPay
     #
     # @return String
     def message
-      ERROR_MESSAGES[target][error_type]
+      ERROR_MESSAGES[target][error_type] || ERROR_MESSAGES[target][:"#{field}_#{error_type}"]
     end
   end
 end

@@ -16,9 +16,10 @@ module RequestHelpers
   # @return Rack::MockRequest
   def provider_request(definition, vals = {})
     pairs = {
+      :name             => "China McPants",
       :number           => 4111111111111111,
       :expiration_month => 9,
-      :expiration_year  => 16,
+      :expiration_year  => 2016,
       :cvv              => 163
     }.merge(vals).map {|k, v| [definition[:field_names][k], v]}
 

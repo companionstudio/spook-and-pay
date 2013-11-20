@@ -43,12 +43,22 @@ module SpookAndPay
     # 
     # @param Symbol target
     # @return Hash
+    # @return Hash<Symbol, Array<SpookAndPay::SubmissionError>>
     def errors_for(target)
       errors.select{|e| e.target == target}.reduce({}) do |h, e|
         h[e.field] ||= []
         h[e.field] << e
         h
       end
+    end
+
+    # Returns the errors for a specific target and field.
+    #
+    # @param Symbol target
+    # @param Symbol field
+    # @return Array<SpookAndPay::SubmissionError>
+    def errors_for_field(target, field)
+      errors.select {|e| e.target == target and e.field == field}
     end
 
     # A nice alias for checking for success.
