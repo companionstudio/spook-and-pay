@@ -71,7 +71,7 @@ module SpookAndPay
       end
 
       def credit_card_from_transaction(id)
-        result = spreedly.find_transaction(id)
+        result = spreedly.find_transaction(transaction_id(id))
         coerce_credit_card(result.payment_method)
       end
 
@@ -81,17 +81,17 @@ module SpookAndPay
       end
 
       def capture_transaction(id)
-        result = spreedly.capture_transaction(id) 
+        result = spreedly.capture_transaction(transaction_id(id))
         coerce_result(result)
       end
 
       def refund_transaction(id)
-        result = spreedly.refund_transaction(id)
+        result = spreedly.refund_transaction(transaction_id(id))
         coerce_result(result)
       end
 
       def void_transaction(id)
-        result = spreedly.void_transaction(id)
+        result = spreedly.void_transaction(transaction_id(id))
         coerce_result(result)
       end
 
@@ -106,7 +106,7 @@ module SpookAndPay
       end
 
       def delete_credit_card(id)
-        result = spreedly.redact_payment_method(id)
+        result = spreedly.redact_payment_method(credit_card_id(id))
         coerce_result(result)
       end
 
@@ -120,9 +120,12 @@ module SpookAndPay
       def coerce_result(result)
         opts = {
           :transaction  => coerce_transaction(result),
-          :card         => coerce_credit_card(result.payment_method),
           :errors       => extract_transaction_errors(result)
         }
+
+        if result.respond_to?(:payment_method)
+          opts[:card] = coerce_credit_card(result.payment_method)
+        end
 
         SpookAndPay::Result.new(result.succeeded, result, opts)
       end
@@ -211,19 +214,19 @@ module SpookAndPay
       def coerce_transaction(transaction)
         fields = {}
 
-        fields[:type] = case transaction
-        when ::Spreedly::Authorization then :authorize
-        when ::Spreedly::Purchase then :purchase
-        when ::Spreedly::Capture then :capture
-        when ::Spreedly::Refund then :credit
-        when ::Spreedly::Void then :void
+        fields[:type], status = case transaction
+        when ::Spreedly::Authorization  then [:authorize, :authorized]
+        when ::Spreedly::Purchase       then [:purchase, :settled]
+        when ::Spreedly::Capture        then [:capture, :settled]
+        when ::Spreedly::Refund         then [:credit, :refunded]
+        when ::Spreedly::Void           then [:void, :voided]
         end
 
         if transaction.respond_to?(:amount)
           fields[:amount] = transaction.amount
         end
 
-        SpookAndPay::Transaction.new(self, transaction.token, nil, transaction, fields)
+        SpookAndPay::Transaction.new(self, transaction.token, status, transaction, fields)
       end
     end
   end

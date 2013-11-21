@@ -1,20 +1,24 @@
 require 'spec_helper'
 
 describe "Spreedly transactions" do
-  before(:all) do
-    @provider = SpookAndPay::Providers::Spreedly.new(
-      :development,
-      :environment_key => ENV["SPREEDLY_ENVIRONMENT_KEY"],
-      :access_secret   => ENV["SPREEDLY_ACCESS_SECRET"],
-      :gateway_token   => ENV["SPREEDLY_GATEWAY_TOKEN"]
-    )
+  include SpreedlyHelpers
+
+  it "should capture authorized funds" do
+    auth = credit_card.authorize!(2500)
+    capture = auth.transaction.capture!
+    expect(capture.successful?).to eq(true)
   end
 
-  it "should authorize a purchase" do
-    
+  it "should refund" do
+    purchase = credit_card.purchase!(2500)
+    expect(purchase.successful?).to eq(true)
+    refund = purchase.transaction.refund!
+    expect(refund.successful?).to eq(true)
   end
 
-  it "should capture authorized funds"
-  it "should refund"
-  it "should void"
+  it "should void" do
+    auth = credit_card.authorize!(2500)
+    void = auth.transaction.void!
+    expect(void.successful?).to eq(true)
+  end
 end
