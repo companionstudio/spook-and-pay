@@ -12,8 +12,8 @@ Gem::Specification.new do |s|
 
   s.add_dependency              'braintree',  '2.25.0'
   s.add_dependency              'spreedly',   '2.0.6'
+  s.add_dependency              'rack',       '1.5.2'
   s.add_development_dependency  'rspec',      '2.14.1'
   s.add_development_dependency  'httparty',   '0.11.0'
-  s.add_development_dependency  'rack',       '1.5.2'
   s.add_development_dependency  'debugger',   '1.6.1'
 end

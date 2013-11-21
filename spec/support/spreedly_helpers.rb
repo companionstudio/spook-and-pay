@@ -20,8 +20,7 @@ module SpreedlyHelpers
   def submission_request(vals = {})
     prepare = provider.prepare_payment_submission("http://localhost", 10)
     response = provider_request(prepare, vals)
-    query = Rack::Utils.parse_nested_query(response["QUERY_STRING"])
-    provider.confirm_payment_submission(query["token"])
+    provider.confirm_payment_submission(response["QUERY_STRING"])
   end
 
   # Generates a payment method by submitting to Spreedly's transparent redirect

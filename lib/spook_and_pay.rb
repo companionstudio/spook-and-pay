@@ -9,6 +9,7 @@ require 'net/http'
 
 require 'braintree'
 require 'spreedly'
+require 'rack/utils'
 
 require 'spook_and_pay/submission_error'
 require 'spook_and_pay/missing_value_error'

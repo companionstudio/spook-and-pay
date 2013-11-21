@@ -47,9 +47,10 @@ module SpookAndPay
 
       # Confirms the submission of payment details to Spreedly Core.
       #
-      # @param String token
+      # @param String query_string
       # @return SpookAndPay::Result
-      def confirm_payment_submission(token)
+      def confirm_payment_submission(query_string)
+        token = Rack::Utils.parse_nested_query(query_string)["token"]
         credit_card = spreedly.find_payment_method(token)
 
         if credit_card.valid?
