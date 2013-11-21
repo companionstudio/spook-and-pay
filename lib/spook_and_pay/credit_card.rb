@@ -49,9 +49,13 @@ module SpookAndPay
       if @number.nil? or @number.empty?
         nil
       else
-        case card_type
-        when 'american_express' then "XXXX-XXXXXX-#{@number}"
-        else "XXXX-XXXX-XXXX-#{@number}"
+        if @number.length < 12
+          case card_type
+          when 'american_express' then "XXXX-XXXXXX-#{@number}"
+          else "XXXX-XXXX-XXXX-#{@number}"
+          end
+        else
+          @number
         end
       end
     end
