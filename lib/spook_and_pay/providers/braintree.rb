@@ -63,9 +63,8 @@ module SpookAndPay
       # Confirms the submission of payment details to the provider.
       #
       # @param String query_string
-      #
       # @return SpookAndPay::Result
-      def confirm_payment_submission(query_string)
+      def confirm_payment_submission(query_string, opts = {})
         result = adapter.confirm(query_string)
 
         case result

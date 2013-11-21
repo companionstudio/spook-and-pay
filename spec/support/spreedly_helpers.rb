@@ -17,10 +17,11 @@ module SpreedlyHelpers
   #
   # @param Hash vals
   # @return SpookAndPay::Result
-  def submission_request(vals = {})
+  def submission_request(type, vals = {})
+    amount = vals.delete(:amount)
     prepare = provider.prepare_payment_submission("http://localhost", 10)
     response = provider_request(prepare, vals)
-    provider.confirm_payment_submission(response["QUERY_STRING"])
+    provider.confirm_payment_submission(response["QUERY_STRING"], :execute => type, :amount => amount)
   end
 
   # Generates a payment method by submitting to Spreedly's transparent redirect
@@ -28,6 +29,6 @@ module SpreedlyHelpers
   #
   # @return SpookAndPay::CreditCard
   def credit_card
-    submission_request.credit_card
+    submission_request(:store).credit_card
   end
 end

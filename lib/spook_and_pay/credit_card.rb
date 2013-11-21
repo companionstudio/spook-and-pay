@@ -7,7 +7,7 @@ module SpookAndPay
     extend SpookAndPay::ErroringReader
 
     # The basic attributes of the credit card.
-    attr_reader :provider, :id
+    attr_reader :provider, :id, :raw
 
     # The fields required for a credit card
     FIELDS = [:number, :expiration_month, :expiration_year, :cvv, :card_type, :name, :valid, :expired].freeze
@@ -32,9 +32,11 @@ module SpookAndPay
     # @option vals String :name
     # @option vals [true, false] :expired
     # @option vals [true, false] :valid
-    def initialize(provider, id, vals)
+    # @param Class raw
+    def initialize(provider, id, vals, raw = nil)
       @provider = provider
-      @id = id
+      @id       = id
+      @raw      = raw
       FIELDS.each {|f| instance_variable_set(:"@#{f}", vals[f]) if vals.has_key?(f)}
     end
 
