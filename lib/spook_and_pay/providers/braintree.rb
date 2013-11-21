@@ -33,15 +33,15 @@ module SpookAndPay
       # Because Braintree accepts payment details and processes payment in a 
       # single step, this method must also be provided with an amount.
       #
-      # @param [:purchase, :authorize] type
       # @param String redirect_url
-      # @param [String, Numeric] amount
       # @param Hash opts
       # @option opts [true, false] :vault
+      # @option opts [:purchase, :authorize] :type
+      # @option opts [String, Numeric] :amount
       # @return Hash
-      def prepare_payment_submission(type, redirect_url, amount, opts = {})
+      def prepare_payment_submission(redirect_url, opts = {})
         payload = {
-          :transaction  => {:type => 'sale', :amount => amount},
+          :transaction  => {:type => 'sale', :amount => opts[:amount]},
           :redirect_url => redirect_url
         }
 
@@ -49,7 +49,7 @@ module SpookAndPay
           (payload[:transaction][:options] ||= {})[:store_in_vault] = true
         end
 
-        if type == :purchase
+        if opts[:type] == :purchase
           (payload[:transaction][:options] ||= {})[:submit_for_settlement] = true
         end
 

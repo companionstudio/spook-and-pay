@@ -19,7 +19,7 @@ module BraintreeHelpers
   # @param Hash vals
   # @return SpookAndPay::Result
   def submission_request(type, vals = {})
-    prepare = provider.prepare_payment_submission(type, "http://localhost", 10)
+    prepare = provider.prepare_payment_submission("http://localhost", :amount => 10, :type => type)
     response = provider_request(prepare, vals)
     provider.confirm_payment_submission(response["QUERY_STRING"])
   end

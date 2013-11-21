@@ -34,6 +34,9 @@ module SpookAndPay
         super(env, config)
       end
 
+      # @param String redirect_url
+      # @param Hash opts
+      # @return Hash
       def prepare_payment_submission(redirect_url, opts = {})
         {
           :url            => spreedly.transparent_redirect_form_action,
