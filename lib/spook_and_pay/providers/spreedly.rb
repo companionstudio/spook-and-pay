@@ -21,6 +21,11 @@ module SpookAndPay
       # @attr_reader Spreedly::Environment
       attr_reader :spreedly
 
+      # Currency code. Spreedly defaults to USD, but we default to AUD.
+      #
+      # @attr_reader String
+      attr_reader :currency_code
+
       # Generate a new instance of the Spreedly provider.
       #
       # @param Hash config
@@ -30,9 +35,12 @@ module SpookAndPay
       # @option config String :currency_code
       def initialize(env, config)
         @gateway_token = config[:gateway_token]
-        opts = {}
-        opts[:currency_code] = config[:currency_code] if config[:currency_code]
-        @spreedly = ::Spreedly::Environment.new(config[:environment_key], config[:access_secret], opts)
+        @currency_code = config[:currency_code] || 'AUD'
+        @spreedly = ::Spreedly::Environment.new(
+          config[:environment_key], 
+          config[:access_secret],
+          :currency_code => currency_code
+        )
 
         super(env, config)
       end
