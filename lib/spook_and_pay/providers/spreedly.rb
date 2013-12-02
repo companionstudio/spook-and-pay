@@ -27,9 +27,12 @@ module SpookAndPay
       # @option config String :environment_key
       # @option config String :access_secret
       # @option config String :gateway_token
+      # @option config String :currency_code
       def initialize(env, config)
         @gateway_token = config[:gateway_token]
-        @spreedly = ::Spreedly::Environment.new(config[:environment_key], config[:access_secret])
+        opts = {}
+        opts[:currency_code] = config[:currency_code] if config[:currency_code]
+        @spreedly = ::Spreedly::Environment.new(config[:environment_key], config[:access_secret], opts)
 
         super(env, config)
       end

@@ -9,7 +9,8 @@ module SpreedlyHelpers
       :development,
       :environment_key => ENV["SPREEDLY_ENVIRONMENT_KEY"],
       :access_secret   => ENV["SPREEDLY_ACCESS_SECRET"],
-      :gateway_token   => ENV["SPREEDLY_GATEWAY_TOKEN"]
+      :gateway_token   => ENV["SPREEDLY_GATEWAY_TOKEN"],
+      :currency_code   => ENV["SPREEDLY_CURRENCY_CODE"]
     )
   end
 
