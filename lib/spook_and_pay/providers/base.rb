@@ -132,6 +132,15 @@ module SpookAndPay
         raise NotImplementedError
       end
 
+      # Checks to see if voiding is supported. This is dependent on the payment 
+      # provider. The default implementation simply returns true. Specific 
+      # implementations should over-ride this method.
+      # 
+      # @return [true, false]
+      def supports_void?
+        true
+      end
+
       # Voids an authorization. 
       #
       # This should not be called directly. Instead, use the #void! method

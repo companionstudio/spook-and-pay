@@ -108,6 +108,19 @@ module SpookAndPay
         coerce_result(result)
       end
 
+      # This is a nasty little trick that makes the spreedly gateway class 
+      # store the characteristics XML fragment from the server.
+      #
+      # @todo In later versions this might not be necessary. When updating the
+      # spreedly gem, check it.
+      ::Spreedly::Gateway.send(:field, :characteristics)
+
+      def supports_void?
+        gateway = spreedly.find_gateway(gateway_token)
+        node = Nokogiri::XML::DocumentFragment.parse(gateway.characteristics)
+        node.xpath(".//supports_void").inner_html.strip == 'true'
+      end
+
       def authorize_via_credit_card(id, amount)
         result = spreedly.authorize_on_gateway(gateway_token, credit_card_id(id), amount.to_f * 100)
         coerce_result(result)

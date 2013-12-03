@@ -112,7 +112,7 @@ module SpookAndPay
     #
     # @return [true, false]
     def can_void?
-      status == :authorized or status == :settling
+      (status == :authorized or status == :settling) and provider.supports_void?
     end
 
     # Refunds the transaction. The related credit card will be credited for
