@@ -6,6 +6,14 @@ module SpookAndPay
     # This module adds the ::attr_erroring_reader to this class
     extend SpookAndPay::ErroringReader
 
+    # An error raised when trying to perform an action on a card that has 
+    # invalid details or has expired.
+    class InvalidCardError < StandardError
+      def to_s
+        "The action cannot be performed, this card is invalid or expired."
+      end
+    end
+
     # The basic attributes of the credit card.
     attr_reader :provider, :id, :raw
 
@@ -60,6 +68,14 @@ module SpookAndPay
       end
     end
 
+    # Checks to see if funds can be credited to a card. Depends on the 
+    # gateway/provider supporting crediting and having a valid card.
+    #
+    # @return [true, false]
+    def can_credit?
+      provider.supports_credit? and valid? and !expired?
+    end
+
     # Checks to see if this card can be authorized against the specified
     # gateway.
     #
@@ -84,13 +100,26 @@ module SpookAndPay
       provider.supports_delete?
     end
 
+    # Credits the specified amount to the card.
+    #
+    # @param [String, Numeric] amount
+    # @return SpookAndPay::Result
+    # @raises SpookAndPay::Providers::Base::NotSupportedError
+    # @raises SpookAndPay::CreditCard::InvalidCardError
+    def credit!(amount)
+      verify_action
+      provider.credit_via_credit_card(self, amount)
+    end
+
     # Authorizes a payment of the specified amount. This generates a new
     # transaction that must be later settled.
     #
     # @param [String, Numeric] amount
     # @return SpookAndPay::Result
     # @raises SpookAndPay::Providers::Base::NotSupportedError
+    # @raises SpookAndPay::CreditCard::InvalidCardError
     def authorize!(amount)
+      verify_action
       provider.authorize_via_credit_card(self, amount)
     end
 
@@ -99,7 +128,9 @@ module SpookAndPay
     # @param [String, Numeric] amount
     # @return SpookAndPay::Result
     # @raises SpookAndPay::Providers::Base::NotSupportedError
+    # @raises SpookAndPay::CreditCard::InvalidCardError
     def purchase!(amount)
+      verify_action
       provider.purchase_via_credit_card(self, amount)
     end
 
@@ -124,6 +155,18 @@ module SpookAndPay
     # @return [true, false]
     def expired?
       expired
+    end
+
+    private
+
+
+    # A helper method which validates any actions — authorize, credit etc. —
+    # and where the card is expired or has invalid details, raises an error.
+    #
+    # @return nil
+    # @raises SpookAndPay::CreditCard::InvalidCardError
+    def verify_action
+      raise InvalidCardError if expired? or !valid?
     end
   end
 end

@@ -124,7 +124,7 @@ module SpookAndPay
       end
 
       def supports_credit?
-        check_support_for('supports_credit')
+        false
       end
 
       def supports_capture?

@@ -222,6 +222,20 @@ module SpookAndPay
         check_support('authorize')
       end
 
+      # Credits funds to a credit card
+      #
+      # This should not be called directly. Instead, use the #authorize! method
+      # provided by a CreditCard instance.
+      #
+      # @param [SpookAndPay::CreditCard, String] id
+      # @param [String, Numeric] amount in dollars
+      # @return SpookAndPay::Result
+      # @api private
+      # @abstract Subclass to implement
+      def credit_via_credit_card(id, amount)
+        check_support('credit')
+      end
+
       # Creates a purchase against a credit card.
       #
       # This should not be called directly. Instead, use the #purchase! method

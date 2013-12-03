@@ -1,5 +1,6 @@
 require 'bundler/setup'
 require 'rspec'
+require 'rspec/mocks'
 require 'httparty'
 require 'spook_and_pay'
 require 'debugger'
