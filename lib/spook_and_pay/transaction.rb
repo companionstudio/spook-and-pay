@@ -96,7 +96,7 @@ module SpookAndPay
     #
     # @return [true, false]
     def can_refund?
-      status == :settled
+      settled? and provider.supports_refund?
     end
 
     # A predicate for checking if a transaction can be captured. Only true if
@@ -104,7 +104,7 @@ module SpookAndPay
     #
     # @return [true, false]
     def can_capture?
-      status == :authorized
+      authorized? and provider.supports_capture?
     end
 
     # A predicate for checking if a transaction can be voided. Only true if
@@ -112,7 +112,7 @@ module SpookAndPay
     #
     # @return [true, false]
     def can_void?
-      (status == :authorized or status == :settling) and provider.supports_void?
+      (authorized? or settling?) and provider.supports_void?
     end
 
     # Refunds the transaction. The related credit card will be credited for
@@ -120,9 +120,10 @@ module SpookAndPay
     # authorizations.
     #
     # @return SpookAndPay::Result
-    # @raises InvalidActionError
+    # @raises SpookAndPay::Transaction::InvalidActionError
+    # @raises SpookAndPay::Providers::Base::NotSupportedError
     def refund!
-      raise InvalidActionError.new(id, :refund, status) unless can_refund?
+      raise InvalidActionError.new(id, :refund, status) unless settled?
       provider.refund_transaction(self)
     end
 
@@ -130,9 +131,10 @@ module SpookAndPay
     # authorized and will fail if the transaction is already captured.
     #
     # @return SpookAndPay::Result
-    # @raises InvalidActionError
+    # @raises SpookAndPay::Transaction::InvalidActionError
+    # @raises SpookAndPay::Providers::Base::NotSupportedError
     def capture!
-      raise InvalidActionError.new(id, :capture, status) unless can_capture?
+      raise InvalidActionError.new(id, :capture, status) unless authorized?
       provider.capture_transaction(self)
     end
 
@@ -140,9 +142,10 @@ module SpookAndPay
     # authorized status. Otherwise it must be refunded.
     #
     # @return SpookAndPay::Result
-    # @raises InvalidActionError
+    # @raises SpookAndPay::Transaction::InvalidActionError
+    # @raises SpookAndPay::Providers::Base::NotSupportedError
     def void!
-      raise InvalidActionError.new(id, :void, status) unless can_void?
+      raise InvalidActionError.new(id, :void, status) unless authorized? or settling?
       provider.void_transaction(self)
     end
   end

@@ -60,11 +60,36 @@ module SpookAndPay
       end
     end
 
+    # Checks to see if this card can be authorized against the specified
+    # gateway.
+    #
+    # @return [true, false]
+    def can_authorize?
+      provider.supports_authorize? and valid? and !expired?
+    end
+
+    # Checks to see if this card can be used for a purchase against the 
+    # underlying gateway.
+    #
+    # @return [true, false]
+    def can_purchase?
+      provider.supports_purchase? and valid? and !expired?
+    end
+
+    # Checks to see if the provider/gateway supports the deletion of credit
+    # card details.
+    #
+    # @return [true, false]
+    def can_delete?
+      provider.supports_delete?
+    end
+
     # Authorizes a payment of the specified amount. This generates a new
     # transaction that must be later settled.
     #
     # @param [String, Numeric] amount
     # @return SpookAndPay::Result
+    # @raises SpookAndPay::Providers::Base::NotSupportedError
     def authorize!(amount)
       provider.authorize_via_credit_card(self, amount)
     end
@@ -73,13 +98,15 @@ module SpookAndPay
     #
     # @param [String, Numeric] amount
     # @return SpookAndPay::Result
+    # @raises SpookAndPay::Providers::Base::NotSupportedError
     def purchase!(amount)
       provider.purchase_via_credit_card(self, amount)
     end
 
     # Deletes the credit card from the provider's vault.
     #
-    # @return [true, false]
+    # @return SpookAndPay::Result
+    # @raises SpookAndPay::Providers::Base::NotSupportedError
     def delete!
       provider.delete_credit_card(self)
     end

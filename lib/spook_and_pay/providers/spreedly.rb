@@ -115,10 +115,30 @@ module SpookAndPay
       # spreedly gem, check it.
       ::Spreedly::Gateway.send(:field, :characteristics)
 
+      def supports_purchase?
+        check_support_for('supports_purchase')
+      end
+
       def supports_void?
-        gateway = spreedly.find_gateway(gateway_token)
-        node = Nokogiri::XML::DocumentFragment.parse(gateway.characteristics)
-        node.xpath(".//supports_void").inner_html.strip == 'true'
+        check_support_for('supports_void')
+      end
+
+      def supports_credit?
+        check_support_for('supports_credit')
+      end
+
+      def supports_capture?
+        check_support_for('supports_capture')
+      end
+
+      def supports_authorize?
+        check_support_for('supports_authorize')
+      end
+
+      def supports_delete?
+        # This does not check the gateway, since the redaction is specific to
+        # Spreedly's store, not the gateway.
+        true
       end
 
       def authorize_via_credit_card(id, amount)
@@ -137,6 +157,18 @@ module SpookAndPay
       end
 
       private
+
+      # Retrieves the gateway from Spreedly and then inspects the response to 
+      # see what features it supports. This is a helper for the #supports_*?
+      # predicates.
+      #
+      # @param String path
+      # @return [true, false]
+      def check_support_for(path)
+        gateway = spreedly.find_gateway(gateway_token)
+        node = Nokogiri::XML::DocumentFragment.parse(gateway.characteristics)
+        node.xpath(".//#{path}").inner_html.strip == 'true'
+      end
 
       # Takes the result of running a transaction against a Spreedly gateway
       # and coerces it into a SpookAndPay::Result

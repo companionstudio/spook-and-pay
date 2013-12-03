@@ -118,7 +118,7 @@ module SpookAndPay
       # @param [SpookAndPay::Transaction, String] id
       # @return SpookAndPay::Result
       def capture_transaction(id)
-        raise NotImplementedError
+        check_support('capture')
       end
 
       # Refunds the amount of money captured in a transaction.
@@ -129,7 +129,16 @@ module SpookAndPay
       # @param [SpookAndPay::Transaction, String] id
       # @return SpookAndPay::Result
       def refund_transaction(id)
-        raise NotImplementedError
+        check_support('refund')
+      end
+
+      # Checks to see if purchasing is supported. This is dependent on the payment 
+      # provider. The default implementation simply returns true. Specific 
+      # implementations should over-ride this method.
+      # 
+      # @return [true, false]
+      def supports_purchase?
+        true
       end
 
       # Checks to see if voiding is supported. This is dependent on the payment 
@@ -138,6 +147,51 @@ module SpookAndPay
       # 
       # @return [true, false]
       def supports_void?
+        true
+      end
+
+      # Checks to see if crediting is supported. This is dependent on the payment 
+      # provider. The default implementation simply returns true. Specific 
+      # implementations should over-ride this method.
+      # 
+      # @return [true, false]
+      def supports_credit?
+        true
+      end
+
+      # Checks to see if refunding is supported. This is dependent on the payment 
+      # provider. The default implementation simply returns true. Specific 
+      # implementations should over-ride this method.
+      # 
+      # @return [true, false]
+      def supports_refund?
+        true
+      end
+
+      # Checks to see if capturing is supported. This is dependent on the payment 
+      # provider. The default implementation simply returns true. Specific 
+      # implementations should over-ride this method.
+      # 
+      # @return [true, false]
+      def supports_capture?
+        true
+      end
+
+      # Checks to see if authorizing is supported. This is dependent on the payment 
+      # provider. The default implementation simply returns true. Specific 
+      # implementations should over-ride this method.
+      # 
+      # @return [true, false]
+      def supports_authorize?
+        true
+      end
+
+      # Checks to see if the deletion of payment details is supported. This is
+      # dependent on the payment provider. The default implementation simply 
+      # returns true. Specific implementations should over-ride this method.
+      # 
+      # @return [true, false]
+      def supports_delete?
         true
       end
 
@@ -151,7 +205,7 @@ module SpookAndPay
       # @api private
       # @abstract Subclass to implement
       def void_transaction(id)
-        raise NotImplementedError
+        check_support('void')
       end
 
       # Authorizes a payment against a credit card
@@ -165,7 +219,7 @@ module SpookAndPay
       # @api private
       # @abstract Subclass to implement
       def authorize_via_credit_card(id, amount)
-        raise NotImplementedError
+        check_support('authorize')
       end
 
       # Creates a purchase against a credit card.
@@ -179,7 +233,7 @@ module SpookAndPay
       # @api private
       # @abstract Subclass to implement
       def purchase_via_credit_card(id, amount)
-        raise NotImplementedError
+        check_support('purchase')
       end
 
       # Removes payment details from the provider's vault.
@@ -192,10 +246,31 @@ module SpookAndPay
       # @api private
       # @abstract Subclass to implement
       def delete_credit_card(id)
-        raise NotImplementedError
+        check_support('delete')
       end
 
       private
+
+      # Checks to see if a particular action is defined as being supported and 
+      # raises the appropriate error.
+      #
+      # The basic semantics is this; if someone implementing a provider says an
+      # action is supported via a #supports_*? predicate, this method should 
+      # never be called, so we raise NotImplementedError. Otherwise they are
+      # saying it's not supported and the appropriate response is to raise a
+      # NotSupportedError.
+      #
+      # @param String action
+      # @return nil
+      # @raises NotSupportedError
+      # @raises NotImplementedError
+      def check_support(action)
+        if send(:"supports_#{action}?")
+          raise NotImplementedError
+        else
+          raise NotSupportedError
+        end
+      end
 
       # Extracts the credit card id from it's argument. This is is to help with
       # methods that accept either a card instance of an id.
