@@ -49,11 +49,17 @@ module SpookAndPay
       # @param Hash opts
       # @return Hash
       def prepare_payment_submission(redirect_url, opts = {})
-        {
+        config = {
           :url            => spreedly.transparent_redirect_form_action,
           :field_names    => self.class::FORM_FIELD_NAMES,
           :hidden_fields  => {:redirect_url => redirect_url, :environment_key => spreedly.key}
         }
+
+        if opts[:token]
+          config[:hidden_fields][:payment_method_token] = opts[:token]
+        end
+
+        config
       end
 
       # Confirms the submission of payment details to Spreedly Core.
