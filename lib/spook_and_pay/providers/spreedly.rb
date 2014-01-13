@@ -258,13 +258,16 @@ module SpookAndPay
       # @param Spreedly::CreditCard
       # @return SpookAndPay::CreditCard
       def coerce_credit_card(card)
+        expired = !card.errors.select {|e| e[:key] == 'errors.expired'}.empty?
+
         fields = {
           :card_type        => card.card_type,
           :number           => card.number,
           :name             => card.full_name,
           :expiration_month => card.month,
           :expiration_year  => card.year,
-          :valid            => card.valid?
+          :valid            => card.valid?,
+          :expired          => expired
         }
 
         SpookAndPay::CreditCard.new(self, card.token, fields, card)
