@@ -16,12 +16,14 @@ module SpookAndPay
         :number_required          => "number is required",
         :number_invalid           => "number is invalid",
         :number_too_short         => "number must be between 12 and 19 digits",
+        :name_required            => "name is required",
         :type_not_accepted        => "card type is not accepted by this merchant",
         :expiration_month_invalid => "expiration month is invalid",
         :expiration_month_expired => "expiration month has expired",
         :expiration_year_invalid  => "expiration year is invalid",
         :expiration_year_expired  => "expiration year has expired",
-        :cvv_invalid              => "CVV must be three digits"
+        :cvv_invalid              => "CVV must be three digits",
+        :cvv_required             => "CVV is required"
       },
       :transaction => {
         :cannot_capture => "must be authorized in order to capture funds",

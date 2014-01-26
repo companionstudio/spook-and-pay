@@ -207,7 +207,7 @@ module SpookAndPay
       # Maps the error types from Spreedly's to the names used internally.
       ERRORS = {
         "errors.invalid" => :invalid,
-        "errors.blank" => :blank,
+        "errors.blank" => :required,
         "errors.expired" => :expired
       }.freeze
 
