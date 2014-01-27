@@ -28,7 +28,8 @@ module SpookAndPay
       :transaction => {
         :cannot_capture => "must be authorized in order to capture funds",
         :cannot_refund  => "must be settled in order to refund",
-        :cannot_void    => "must be authorized or settled in order to void"
+        :cannot_void    => "must be authorized or settled in order to void",
+        :card_declined  => "cannot process transaction; card has been declined"
       },
       :unknown => {
         :unknown => "please refer to the #raw attribute of this error"

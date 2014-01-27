@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    spook_and_pay (0.2.8.alpha)
+    spook_and_pay (0.2.9.alpha)
       braintree (= 2.25.0)
       rack (>= 1.4.0)
       spreedly (= 2.0.6)

@@ -134,9 +134,9 @@ module SpookAndPay
         "81712" => [:credit_card, :invalid, :expiration_month],
         "81713" => [:credit_card, :invalid, :expiration_year],
         "81707" => [:credit_card, :invalid, :cvv],
-        "91507" => [:transaction, :cannot_capture, :status],
-        "91506" => [:transaction, :cannot_refund, :status],
-        "91504" => [:transaction, :cannot_void, :status]
+        "91507" => [:transaction, :cannot_capture, :transaction],
+        "91506" => [:transaction, :cannot_refund, :transaction],
+        "91504" => [:transaction, :cannot_void, :transaction]
       }.freeze
 
       # Extracts errors from the collection returned by Brain tree and coerces
