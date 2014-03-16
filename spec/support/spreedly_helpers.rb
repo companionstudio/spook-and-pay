@@ -20,7 +20,7 @@ module SpreedlyHelpers
   # @return SpookAndPay::Result
   def submission_request(type, vals = {})
     amount = vals.delete(:amount)
-    prepare = provider.prepare_payment_submission("http://localhost", 10)
+    prepare = provider.prepare_payment_submission("http://localhost")
     response = provider_request(prepare, vals)
     provider.confirm_payment_submission(response["QUERY_STRING"], :execute => type, :amount => amount)
   end

@@ -148,12 +148,12 @@ module SpookAndPay
       end
 
       def authorize_via_credit_card(id, amount)
-        result = spreedly.authorize_on_gateway(gateway_token, credit_card_id(id), amount.to_f * 100)
+        result = spreedly.authorize_on_gateway(gateway_token, credit_card_id(id), (amount.to_f * 100).to_i)
         coerce_result(result)
       end
 
       def purchase_via_credit_card(id, amount)
-        result = spreedly.purchase_on_gateway(gateway_token, credit_card_id(id), amount.to_f * 100)
+        result = spreedly.purchase_on_gateway(gateway_token, credit_card_id(id), (amount.to_f * 100).to_i)
         coerce_result(result)
       end
 
