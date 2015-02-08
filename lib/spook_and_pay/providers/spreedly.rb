@@ -11,7 +11,7 @@ module SpookAndPay
         :cvv              => "credit_card[verification_value]"
       }.freeze
 
-      # The which refers to a specific gateway. 
+      # The which refers to a specific gateway.
       #
       # @attr_reader String
       attr_reader :gateway_token
@@ -37,7 +37,7 @@ module SpookAndPay
         @gateway_token = config[:gateway_token]
         @currency_code = config[:currency_code] || 'AUD'
         @spreedly = ::Spreedly::Environment.new(
-          config[:environment_key], 
+          config[:environment_key],
           config[:access_secret],
           :currency_code => currency_code
         )
@@ -77,7 +77,7 @@ module SpookAndPay
           case opts[:execute]
           when :authorize then card.authorize!(opts[:amount])
           when :purchase  then card.purchase!(opts[:amount])
-          when :store     then SpookAndPay::Result.new(true, nil, :credit_card => card)
+          else                 SpookAndPay::Result.new(true, nil, :credit_card => card)
           end
         else
           SpookAndPay::Result.new(false, nil, :credit_card => card, :errors => extract_card_errors(card.raw))
@@ -114,7 +114,7 @@ module SpookAndPay
         coerce_result(result)
       end
 
-      # This is a nasty little trick that makes the spreedly gateway class 
+      # This is a nasty little trick that makes the spreedly gateway class
       # store the characteristics XML fragment from the server.
       #
       # @todo In later versions this might not be necessary. When updating the
@@ -162,9 +162,19 @@ module SpookAndPay
         coerce_result(result)
       end
 
+      # Calls the retain action on the provider's vault.
+      #
+      # @param [SpookAndPay::CreditCard, Integer, String] id
+      # @return SpookAndPay::Result
+      # @api private
+      def retain_credit_card(id)
+        result = spreedly.retain_payment_method(credit_card_id(id))
+        coerce_result(result)
+      end
+
       private
 
-      # Retrieves the gateway from Spreedly and then inspects the response to 
+      # Retrieves the gateway from Spreedly and then inspects the response to
       # see what features it supports. This is a helper for the #supports_*?
       # predicates.
       #
@@ -197,7 +207,7 @@ module SpookAndPay
       # A mapping from the names used by Spreedly to the names SpookAndPay uses
       # internally.
       CARD_FIELDS = {
-        "full_name" => :name, 
+        "full_name" => :name,
         "number" => :number,
         "year" => :expiration_year,
         "month" => :expiration_month,
@@ -216,12 +226,12 @@ module SpookAndPay
       #
       # @param Spreedly::CreditCard result
       # @return Array<SpookAndPay::SubmissionError>
-      # @todo If the Spreedly API behaves later, the check for first/last 
+      # @todo If the Spreedly API behaves later, the check for first/last
       #       name might not be needed anymore.
       def extract_card_errors(result)
-        # This gnarly bit of code transforms errors on the first_name or 
+        # This gnarly bit of code transforms errors on the first_name or
         # last_name attributes into an error on full_name. This is because
-        # Spreedly accepts input for full_name, but propogates errors to the 
+        # Spreedly accepts input for full_name, but propogates errors to the
         # separate attributes.
         errors = result.errors.map do |e|
           case e[:attribute]
@@ -243,7 +253,7 @@ module SpookAndPay
         end
       end
 
-      # Extracts/coerces errors from a Spreedly transaction into 
+      # Extracts/coerces errors from a Spreedly transaction into
       # SubmissionError instances.
       #
       # @param Spreedly::Transaction result
@@ -288,11 +298,12 @@ module SpookAndPay
         fields = {}
 
         fields[:type], status = case transaction
-        when ::Spreedly::Authorization  then [:authorize, :authorized]
-        when ::Spreedly::Purchase       then [:purchase, :settled]
-        when ::Spreedly::Capture        then [:capture, :settled]
-        when ::Spreedly::Refund         then [:credit, :refunded]
-        when ::Spreedly::Void           then [:void, :voided]
+        when ::Spreedly::Authorization        then [:authorize, :authorized]
+        when ::Spreedly::Purchase             then [:purchase, :settled]
+        when ::Spreedly::Capture              then [:capture, :settled]
+        when ::Spreedly::Refund               then [:credit, :refunded]
+        when ::Spreedly::Void                 then [:void, :voided]
+        when ::Spreedly::RetainPaymentMethod  then [:retain, :retained]
         end
 
         if transaction.respond_to?(:amount)
