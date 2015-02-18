@@ -132,6 +132,17 @@ module SpookAndPay
         check_support('refund')
       end
 
+      # Partially refunds the amount of money captured in a transaction.
+      #
+      # This should not be called directly. Instead, use the #partial_refund! method
+      # provided by a Transaction instance.
+      #
+      # @param [SpookAndPay::Transaction, String] id
+      # @return SpookAndPay::Result
+      def partially_refund_transaction(id)
+        check_support('partial_refund')
+      end
+
       # Checks to see if purchasing is supported. This is dependent on the payment
       # provider. The default implementation simply returns true. Specific
       # implementations should over-ride this method.
@@ -165,6 +176,15 @@ module SpookAndPay
       #
       # @return [true, false]
       def supports_refund?
+        true
+      end
+
+      # Checks to see if partial refunding is supported. This is dependent on
+      # the payment provider. The default implementation simply returns true.
+      # Specific implementations should over-ride this method.
+      #
+      # @return [true, false]
+      def supports_partial_refund?
         true
       end
 

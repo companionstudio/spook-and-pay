@@ -109,6 +109,11 @@ module SpookAndPay
         coerce_result(result)
       end
 
+      def partially_refund_transaction(id, amount)
+        result = spreedly.refund_transaction(transaction_id(id), :amount => (amount.to_f * 100).to_i)
+        coerce_result(result)
+      end
+
       def void_transaction(id)
         result = spreedly.void_transaction(transaction_id(id))
         coerce_result(result)

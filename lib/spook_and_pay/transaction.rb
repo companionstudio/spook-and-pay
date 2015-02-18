@@ -1,12 +1,12 @@
 module SpookAndPay
-  # A simple class representing an interaction with a provider. Each 
-  # interaction has an ID, a type and may be successful or not. It is 
+  # A simple class representing an interaction with a provider. Each
+  # interaction has an ID, a type and may be successful or not. It is
   # read-only.
   class Transaction
     # Basic attributes
     attr_reader :provider, :id, :status, :raw
 
-    # Extra set of fields which may or may not be present depending on the 
+    # Extra set of fields which may or may not be present depending on the
     # provider.
     FIELDS = [:created_at, :updated_at, :amount, :credit_card, :type].freeze
     attr_reader *FIELDS
@@ -37,7 +37,7 @@ module SpookAndPay
       end
     end
 
-    # As a bare minimum the transaction captures the transaction ID, it's 
+    # As a bare minimum the transaction captures the transaction ID, it's
     # status and the raw response from the provider. Optionally, it can receive
     # other fields via the opts hash.
     #
@@ -60,7 +60,7 @@ module SpookAndPay
       FIELDS.each {|f| instance_variable_set(:"@#{f}", opts[f]) if opts.has_key?(f)}
     end
 
-    # Implements value comparison i.e. if class and ID match, they are the 
+    # Implements value comparison i.e. if class and ID match, they are the
     # same.
     #
     # @param Class other
@@ -127,7 +127,20 @@ module SpookAndPay
       provider.refund_transaction(self)
     end
 
-    # Captures an authorized transaction. Will only capture the amount 
+    # Refunds the transaction. The related credit card will be credited for
+    # the amount specified. It will only succeed for purchases or captured
+    # authorizations.
+    #
+    # @param Numeric amount
+    # @return SpookAndPay::Result
+    # @raises SpookAndPay::Transaction::InvalidActionError
+    # @raises SpookAndPay::Providers::Base::NotSupportedError
+    def partial_refund!(amount)
+      raise InvalidActionError.new(id, :partial_refund, status) unless settled?
+      provider.partially_refund_transaction(self, amount)
+    end
+
+    # Captures an authorized transaction. Will only capture the amount
     # authorized and will fail if the transaction is already captured.
     #
     # @return SpookAndPay::Result
@@ -138,7 +151,7 @@ module SpookAndPay
       provider.capture_transaction(self)
     end
 
-    # Voids a transaction. Can only be done when the transaction is in the 
+    # Voids a transaction. Can only be done when the transaction is in the
     # authorized status. Otherwise it must be refunded.
     #
     # @return SpookAndPay::Result
