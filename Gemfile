@@ -1,10 +1,9 @@
 source "https://rubygems.org"
 
-ruby "2.0.0"
+ruby "2.1.6"
 
 gemspec
 
 gem 'rake'
 gem 'sinatra'
 gem 'rerun'
-gem 'debugger'

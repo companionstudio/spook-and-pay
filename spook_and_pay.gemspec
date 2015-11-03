@@ -2,7 +2,7 @@ $:.push File.expand_path("../lib/spook_and_pay", __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = "spook_and_pay"
-  s.version     = "0.3.1.alpha"
+  s.version     = "1.0.0"
   s.authors     = ["Luke Sutton", "Ben Hull"]
   s.email       = ["lukeandben@spookandpuff.com"]
   s.homepage    = "http://spookandpuff.com"
@@ -15,5 +15,4 @@ Gem::Specification.new do |s|
   s.add_dependency              'rack',       '>= 1.4.0'
   s.add_development_dependency  'rspec',      '2.14.1'
   s.add_development_dependency  'httparty',   '0.11.0'
-  s.add_development_dependency  'debugger',   '1.6.1'
 end
