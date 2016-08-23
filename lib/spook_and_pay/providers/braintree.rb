@@ -17,8 +17,8 @@ module SpookAndPay
       # @option config String :private_key
       def initialize(env, config)
         @adapter = SpookAndPay::Adapters::Braintree.new(
-          env, 
-          config[:merchant_id], 
+          env,
+          config[:merchant_id],
           config[:public_key],
           config[:private_key]
         )
@@ -26,11 +26,11 @@ module SpookAndPay
         super(env, config)
       end
 
-      # Braintree specific version of this method. Can be used to either 
-      # authorize a payment — and capture it later — or submit a payment for 
+      # Braintree specific version of this method. Can be used to either
+      # authorize a payment — and capture it later — or submit a payment for
       # settlement immediately. This is done via the type param.
       #
-      # Because Braintree accepts payment details and processes payment in a 
+      # Because Braintree accepts payment details and processes payment in a
       # single step, this method must also be provided with an amount.
       #
       # @param String redirect_url
@@ -70,9 +70,9 @@ module SpookAndPay
         case result
         when ::Braintree::SuccessfulResult
           SpookAndPay::Result.new(
-            true, 
+            true,
             result,
-            :credit_card => extract_credit_card(result.transaction.credit_card_details, true, false), 
+            :credit_card => extract_credit_card(result.transaction.credit_card_details, true, false),
             :transaction => extract_transaction(result.transaction)
           )
         when ::Braintree::ErrorResult
@@ -112,6 +112,10 @@ module SpookAndPay
         generate_result(result)
       end
 
+      def partially_refund_transaction(id, amount)
+        result = adapter.partially_refund(transaction_id(id), amount)
+      end
+
       def void_transaction(id)
         result = adapter.void(transaction_id(id))
         generate_result(result)
@@ -119,12 +123,12 @@ module SpookAndPay
 
       private
 
-      # Maps the error codes returned by Braintree to a triple of target, type 
+      # Maps the error codes returned by Braintree to a triple of target, type
       # and field used by the SubmissionError class.
       #
       # The key is the error code from Braintree. The first entry in the triple
-      # is the specific portion of the transaction that has the error. The 
-      # second is the type of error and the third is the field — if any — it 
+      # is the specific portion of the transaction that has the error. The
+      # second is the type of error and the third is the field — if any — it
       # applies to.
       ERROR_CODE_MAPPING = {
         "81715" => [:credit_card, :invalid, :number],
@@ -147,7 +151,7 @@ module SpookAndPay
       def extract_errors(result)
         result.errors.map do |e|
           mapping = ERROR_CODE_MAPPING[e.code]
-          if mapping 
+          if mapping
             SubmissionError.new(*mapping, e)
           else
             SubmissionError.new(:unknown, :unknown, :unknown, e)
@@ -155,7 +159,7 @@ module SpookAndPay
         end
       end
 
-      # A generic method for generating results on actions. It doesn't capture 
+      # A generic method for generating results on actions. It doesn't capture
       # anything action specific i.e. it might need to be replaced later.
       #
       # @param [Braintree::SuccessfulResult, Braintree:ErrorResult] result
@@ -164,22 +168,22 @@ module SpookAndPay
         case result
         when ::Braintree::SuccessfulResult
           SpookAndPay::Result.new(
-            true, 
-            result, 
-            :credit_card => extract_credit_card(result.transaction.credit_card_details, true, false), 
+            true,
+            result,
+            :credit_card => extract_credit_card(result.transaction.credit_card_details, true, false),
             :transaction => extract_transaction(result.transaction)
           )
         when ::Braintree::ErrorResult
           SpookAndPay::Result.new(
-            false, 
-            result, 
+            false,
+            result,
             :errors => extract_errors(result)
           )
         end
       end
 
       # Extracts credit card details from a payload extracted from a result.
-      # It could be either a Hash, Braintree::CreditCard or 
+      # It could be either a Hash, Braintree::CreditCard or
       # Braintree::Transaction::CreditCardDetails. BOO!
       #
       # @param [Hash, Braintree::CreditCard, Braintree::Transaction::CreditCardDetails] card
@@ -190,7 +194,7 @@ module SpookAndPay
       # @todo figure out validity and expiry ourselves
       def extract_credit_card(card, valid, expired)
         opts = case card
-        when Hash 
+        when Hash
           {
             :token            => card[:token],
             :card_type        => card[:card_type],
@@ -213,7 +217,7 @@ module SpookAndPay
         SpookAndPay::CreditCard.new(self, opts.delete(:token), opts)
       end
 
-      # Extracts transaction details from whatever payload is passed in. This 
+      # Extracts transaction details from whatever payload is passed in. This
       # might be Hash or a Braintree:Transaction.
       #
       # @param [Hash, Braintree::Transaction] result
@@ -233,7 +237,7 @@ module SpookAndPay
             :type       => result[:type].to_sym,
             :created_at => result[:created_at],
             :amount     => result[:amount]
-          ) 
+          )
         else
           SpookAndPay::Transaction.new(
             self,
@@ -243,7 +247,7 @@ module SpookAndPay
             :type       => result.type.to_sym,
             :created_at => result.created_at,
             :amount     => result.amount
-          ) 
+          )
         end
       end
 

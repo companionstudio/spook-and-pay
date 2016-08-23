@@ -8,7 +8,7 @@ module SpookAndPay
       # accessed externally, but is put here for debugging etc.
       attr_reader :gateway
 
-      # Constructs an instance of the Braintree gateway which it then acts as 
+      # Constructs an instance of the Braintree gateway which it then acts as
       # a proxy to.
       #
       # @param [:development, :test, :production] environment
@@ -55,7 +55,7 @@ module SpookAndPay
         end
       end
 
-      # Generates the hash and query string that needs to be embedded inside 
+      # Generates the hash and query string that needs to be embedded inside
       # of a form in order to interact with Braintree's transparent redirect.
       #
       # @param Hash data
@@ -65,7 +65,7 @@ module SpookAndPay
         gateway.transparent_redirect.transaction_data(data)
       end
 
-      # Used to confirm the submission of purchase or authorize transactions 
+      # Used to confirm the submission of purchase or authorize transactions
       # via transparent redirect.
       #
       # @param String query_string
@@ -88,6 +88,15 @@ module SpookAndPay
       # @return [Braintree::SuccessfulResult, Braintree::ErrorResult]
       def refund(id)
         gateway.transaction.refund(id)
+      end
+
+      # Partially refunds the funds in a settled transaction.
+      #
+      # @param String id
+      # @param Float amount
+      # @return [Braintree::SuccessfulResult, Braintree::ErrorResult]
+      def partially_refund(id, amount)
+        gateway.transaction.refund(id, amount)
       end
 
       # Voids a transaction.
