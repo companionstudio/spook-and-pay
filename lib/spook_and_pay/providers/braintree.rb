@@ -114,6 +114,7 @@ module SpookAndPay
 
       def partially_refund_transaction(id, amount)
         result = adapter.partially_refund(transaction_id(id), amount)
+        generate_result(result)
       end
 
       def void_transaction(id)
