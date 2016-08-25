@@ -203,7 +203,8 @@ module SpookAndPay
             :name             => card[:cardholder_name],
             :expiration_month => card[:expiration_month],
             :expiration_year  => card[:expiration_year],
-            :expired          => card[:expired].nil? ? card_expired?(card[:expiration_month], card[:expiration_year]) : card[:expired]
+            :expired          => card[:expired].nil? ? card_expired?(card[:expiration_month], card[:expiration_year]) : card[:expired],
+            :valid            => true # We have to assume it's valid, since BT won't say
           }
         else
           {
@@ -213,7 +214,8 @@ module SpookAndPay
             :name             => card.cardholder_name,
             :expiration_month => card.expiration_month,
             :expiration_year  => card.expiration_year,
-            :expired          => card.expired?
+            :expired          => card.expired?,
+            :valid            => true # We have to assume it's valid, since BT won't say
           }
         end
 
