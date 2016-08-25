@@ -202,7 +202,8 @@ module SpookAndPay
             :number           => card[:last_4],
             :name             => card[:cardholder_name],
             :expiration_month => card[:expiration_month],
-            :expiration_year  => card[:expiration_year]
+            :expiration_year  => card[:expiration_year],
+            :expired          => card[:expired].nil? ? card_expired?(card[:expiration_month], card[:expiration_year]) : card[:expired]
           }
         else
           {
@@ -211,11 +212,22 @@ module SpookAndPay
             :number           => card.last_4,
             :name             => card.cardholder_name,
             :expiration_month => card.expiration_month,
-            :expiration_year  => card.expiration_year
+            :expiration_year  => card.expiration_year,
+            :expired          => card.expired?
           }
         end
 
         SpookAndPay::CreditCard.new(self, opts.delete(:token), opts)
+      end
+
+      # Checks to see if a credit card has expired.
+      #
+      # @param Number month
+      # @param Number year
+      # @return [true, false]
+      def card_expired?(month, year)
+        now = Time.now
+        month < now.month or year < now.year
       end
 
       # Extracts transaction details from whatever payload is passed in. This
