@@ -97,6 +97,11 @@ module SpookAndPay
         extract_credit_card(result.credit_card_details, true, false)
       end
 
+      def purchase_via_credit_card(id, amount)
+        result = adapter.credit_card_purchase(credit_card_id(id), amount)
+        generate_result(result)
+      end
+
       def transaction(id)
         result = adapter.transaction(id)
         extract_transaction(result) if result
@@ -203,7 +208,7 @@ module SpookAndPay
             :name             => card[:cardholder_name],
             :expiration_month => card[:expiration_month],
             :expiration_year  => card[:expiration_year],
-            :expired          => card[:expired].nil? ? card_expired?(card[:expiration_month], card[:expiration_year]) : card[:expired],
+            :expired          => card_expired?(card[:expiration_month].to_i, card[:expiration_year].to_i),
             :valid            => true # We have to assume it's valid, since BT won't say
           }
         else
@@ -214,7 +219,7 @@ module SpookAndPay
             :name             => card.cardholder_name,
             :expiration_month => card.expiration_month,
             :expiration_year  => card.expiration_year,
-            :expired          => card.expired?,
+            :expired          => card_expired?(card.expiration_month.to_i, card.expiration_year.to_i),
             :valid            => true # We have to assume it's valid, since BT won't say
           }
         end
@@ -229,7 +234,7 @@ module SpookAndPay
       # @return [true, false]
       def card_expired?(month, year)
         now = Time.now
-        month < now.month or year < now.year
+        year < now.year or (year == now.year and month < now.month)
       end
 
       # Extracts transaction details from whatever payload is passed in. This

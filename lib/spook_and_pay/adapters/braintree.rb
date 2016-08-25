@@ -82,6 +82,19 @@ module SpookAndPay
         gateway.transaction.submit_for_settlement(id)
       end
 
+      # Makes a purchase using a credit token.
+      #
+      # @param String id
+      # @param Number amount
+      # @return [Braintree::SuccessfulResult, Braintree::ErrorResult]
+      def credit_card_purchase(id, amount)
+        gateway.transaction.sale(
+          :payment_method_token => id,
+          :amount => amount,
+          :options => {:submit_for_settlement => true}
+        )
+      end
+
       # Refunds the funds in a settled transaction.
       #
       # @param String id
