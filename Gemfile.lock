@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    spook_and_pay (1.0.0)
+    spook_and_pay (1.1.1)
       braintree (= 2.25.0)
       rack (>= 1.4.0)
       spreedly (= 2.0.6)
@@ -12,36 +12,18 @@ GEM
     braintree (2.25.0)
       builder (>= 2.0.0)
     builder (3.2.2)
-    celluloid (0.15.2)
-      timers (~> 1.1.0)
-    celluloid-io (0.15.0)
-      celluloid (>= 0.15.0)
-      nio4r (>= 0.5.0)
     diff-lcs (1.2.5)
-    ffi (1.9.3)
     httparty (0.11.0)
       multi_json (~> 1.0)
       multi_xml (>= 0.5.2)
-    listen (2.7.1)
-      celluloid (>= 0.15.2)
-      celluloid-io (>= 0.15.0)
-      rb-fsevent (>= 0.9.3)
-      rb-inotify (>= 0.9)
-    mini_portile (0.6.2)
-    multi_json (1.9.0)
+    mini_portile2 (2.1.0)
+    multi_json (1.12.1)
     multi_xml (0.5.5)
-    nio4r (1.0.0)
-    nokogiri (1.6.6.2)
-      mini_portile (~> 0.6.0)
-    rack (1.5.2)
-    rack-protection (1.5.2)
-      rack
-    rake (0.9.6)
-    rb-fsevent (0.9.4)
-    rb-inotify (0.9.3)
-      ffi (>= 0.5.0)
-    rerun (0.9.0)
-      listen (~> 2.7)
+    nokogiri (1.6.8)
+      mini_portile2 (~> 2.1.0)
+      pkg-config (~> 1.1.7)
+    pkg-config (1.1.7)
+    rack (2.0.1)
     rspec (2.14.1)
       rspec-core (~> 2.14.0)
       rspec-expectations (~> 2.14.0)
@@ -50,25 +32,19 @@ GEM
     rspec-expectations (2.14.5)
       diff-lcs (>= 1.1.3, < 2.0)
     rspec-mocks (2.14.6)
-    sinatra (1.4.4)
-      rack (~> 1.4)
-      rack-protection (~> 1.4)
-      tilt (~> 1.3, >= 1.3.4)
     spreedly (2.0.6)
       nokogiri
-    tilt (1.4.1)
-    timers (1.1.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   httparty (= 0.11.0)
-  rake
-  rerun
   rspec (= 2.14.1)
-  sinatra
   spook_and_pay!
 
+RUBY VERSION
+   ruby 2.2.5p319
+
 BUNDLED WITH
-   1.10.5
+   1.12.5
