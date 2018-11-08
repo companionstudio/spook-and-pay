@@ -3,9 +3,9 @@ $:.push File.expand_path("../lib/spook_and_pay", __FILE__)
 Gem::Specification.new do |s|
   s.name        = "spook_and_pay"
   s.version     = "1.1.2"
-  s.authors     = ["Luke Sutton", "Ben Hull"]
-  s.email       = ["lukeandben@spookandpuff.com"]
-  s.homepage    = "http://spookandpuff.com"
+  s.authors     = ["Ben Hull"]
+  s.email       = ["ben@companionstudio.com.au"]
+  s.homepage    = "https://github.com/companionstudio/spook-and-pay"
   s.summary     = "A library for handling online payments using services providing transparent redirects."
 
   s.files = Dir["lib/**/*"] + ["README.md", "LICENSE"]
