@@ -1,9 +1,9 @@
 PATH
   remote: .
   specs:
-    spook_and_pay (1.1.2)
+    spook_and_pay (1.1.3)
       braintree (= 2.92.0)
-      rack (>= 1.4.0)
+      rack (>= 2)
       spreedly (= 2.0.18)
 
 GEM
@@ -16,12 +16,12 @@ GEM
     httparty (0.11.0)
       multi_json (~> 1.0)
       multi_xml (>= 0.5.2)
-    mini_portile2 (2.3.0)
+    mini_portile2 (2.4.0)
     multi_json (1.12.1)
     multi_xml (0.5.5)
-    nokogiri (1.8.5)
-      mini_portile2 (~> 2.3.0)
-    rack (2.0.6)
+    nokogiri (1.10.3)
+      mini_portile2 (~> 2.4.0)
+    rack (2.0.7)
     rspec (2.14.1)
       rspec-core (~> 2.14.0)
       rspec-expectations (~> 2.14.0)
@@ -42,7 +42,7 @@ DEPENDENCIES
   spook_and_pay!
 
 RUBY VERSION
-   ruby 2.4.4p296
+   ruby 2.4.5p335
 
 BUNDLED WITH
-   1.16.2
+   1.16.6
