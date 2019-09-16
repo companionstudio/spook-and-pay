@@ -12,8 +12,9 @@ Gem::Specification.new do |s|
   s.files = Dir["lib/**/*"] + ["README.md", "LICENSE"]
 
   s.add_dependency              'braintree',  '2.92.0'
-  s.add_dependency              'spreedly',   '2.0.18'
-  s.add_dependency              'rack',       '>= 2'
+  s.add_dependency              'spreedly',   '2.0.24'
+  s.add_dependency              'rack',       '~> 2'
   s.add_development_dependency  'rspec',      '2.14.1'
   s.add_development_dependency  'httparty',   '0.11.0'
+  s.add_development_dependency  'rake',       '~> 12.3'
 end
