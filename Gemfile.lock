@@ -21,7 +21,7 @@ GEM
     multi_xml (0.5.5)
     nokogiri (1.10.4)
       mini_portile2 (~> 2.4.0)
-    rack (2.0.7)
+    rack (2.2.3)
     rake (12.3.2)
     rspec (2.14.1)
       rspec-core (~> 2.14.0)
